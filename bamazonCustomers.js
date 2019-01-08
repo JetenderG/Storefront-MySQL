@@ -1,5 +1,5 @@
 var inquirer = require("inquirer");
-connect = require("./connect.js");
+var connect = require("./connect.js");
 inquirer
     .prompt([{
             type: "input",
@@ -14,52 +14,47 @@ inquirer
     ]).then(function (response) {
         var query = "SELECT * FROM `products` WHERE id = ? ";
         connect.connection.query(query, [response.id], function (err, res, fields) {
-            resp = JSON.parse(JSON.stringify(res));
-            stock = parseInt(res[0].stock_quantity);
-            price = res[0].price;
+            //resp = JSON.parse(JSON.stringify(res));
+            var stock = res[0].stock_quantity;
+            var price = res[0].price;
 
             //console.log(JSON.parse(stock));
-            console.log(response.units)
-            console.log(stock);
-            console.log(res[0].price)
-            console.log(9);
-
-            if (err)
-                throw err;
 
             if (stock = 0) {
                 console.log("We do not have stock on this particular item")
                 connect.connection.end()
-                /*} else if (8 = 8) {
-                            console.log("We do not have enough in stock to purchase item")
-                            connect.connection.end()
-                        } 
-            
-                        */
-            } else if (stock = stock) {
+            } else if (res[0].stock_quantity < response.units) {
+                console.log("We do not have enough in stock to purchase item")
+                connect.connection.end()
+            } else if (res[0].stock_quantity > parseInt(response.units)) {
                 console.log("The  " + res[0].product_name + " cost " + res[0].price);
-                total = price * response.units;
+                var total = res[0].price * response.units;
                 inquirer
                     .prompt([{
                         type: "confirm",
-                        message: "The total is " + total + " for " + res[0].product_name + " of the product /n Do you accept the transaction ",
-                        name: "confirm"
+                        message: "The total is " + total.toFixed(2) + " for " + response.units + " of " + res[0].product_name + " of the product \n Do you accept the transaction ",
+                        name: "con"
                     }]).then(function (buy) {
-                        if (buy.confirm === false) {
+
+
+
+                        if (buy.con === false) {
                             console.log("The transaction was not completed")
                             connect.connection.end()
-                        } else if (buy.confirm === true) {
+                        } else if (buy.con === true) {
                             sql = "UPDATE `products` SET stock_quantity = ? WHERE id = ? ";
-                            newStock = stock - response.units;
-                            console.log(newStock);
-                            connect.connection.query(sql, [stock = stock - response.units, res[0].id], function (err, results) {
+                            //newStock = stock - response.units;
+                            connect.connection.query(sql, [res[0].stock_quantity - response.units, res[0].id], function (err, results) {
                                 if (err) throw err;
-                                console.log(results);
+                                console.log("Tranaction Succesful");
                                 connect.connection.end()
 
                             });
 
-                        };
+                        } else {
+
+                            connect.connection.end();
+                        }
 
                     });
 
