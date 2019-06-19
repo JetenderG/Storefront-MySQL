@@ -19,7 +19,6 @@ inquirer
             var price = res[0].price;
 
             //console.log(JSON.parse(stock));
-
             if (stock = 0) {
                 console.log("We do not have stock on this particular item")
                 connect.connection.end()
